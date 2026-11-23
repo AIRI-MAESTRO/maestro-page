@@ -1,0 +1,2322 @@
+<!doctype html>
+<html lang="ru" data-theme="warm">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MAESTRO — агентные цепочки из текстового запроса</title>
+    <meta
+      name="description"
+      content="MAESTRO превращает текстовый запрос в агентную цепочку — запусти, открой по шагам, сохрани, переиспользуй и улучшай. Открытый код, TUI и CLI."
+    />
+    <link rel="canonical" href="https://airi-maestro.github.io/maestro-page/" />
+    <link rel="alternate" hreflang="ru" href="https://airi-maestro.github.io/maestro-page/?lang=ru" />
+    <link rel="alternate" hreflang="en" href="https://airi-maestro.github.io/maestro-page/?lang=en" />
+    <link rel="alternate" hreflang="x-default" href="https://airi-maestro.github.io/maestro-page/" />
+    <meta name="theme-color" content="#2ebfae" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MAESTRO CARE" />
+    <meta property="og:url" content="https://airi-maestro.github.io/maestro-page/" />
+    <meta
+      property="og:title"
+      content="MAESTRO — агентные цепочки из текстового запроса"
+    />
+    <meta
+      property="og:description"
+      content="MAESTRO превращает текстовый запрос в агентную цепочку — запусти, открой по шагам, сохрани, переиспользуй и улучшай. Открытый код, TUI и CLI."
+    />
+    <meta property="og:image" content="https://airi-maestro.github.io/maestro-page/assets/mascot.png" />
+    <meta property="og:image:alt" content="MAESTRO CARE — маскот EVOC" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MAESTRO — агентные цепочки из текстового запроса" />
+    <meta name="twitter:description" content="Текстовый запрос → агентная цепочка: запусти, открой по шагам, сохрани, переиспользуй и улучшай. Открытый код, TUI и CLI." />
+    <meta name="twitter:image" content="https://airi-maestro.github.io/maestro-page/assets/mascot.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "MAESTRO",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows",
+        "description": "MAESTRO turns a text prompt into an agent chain you can launch, inspect step by step, save, reuse, and evolve — open source, from the terminal (TUI and CLI).",
+        "url": "https://airi-maestro.github.io/maestro-page/",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "codeRepository": "https://github.com/AIRI-MAESTRO/maestro-ui",
+        "author": { "@type": "Organization", "name": "AIRI" }
+      }
+    </script>
+    <link rel="icon" href="assets/favicon.png" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=38" />
+    <script>
+      (function () {
+        var VALID = ["warm", "crystal"];
+        try {
+          var fromUrl = new URLSearchParams(window.location.search).get(
+            "theme"
+          );
+          var stored = localStorage.getItem("care-landing-theme");
+          var theme =
+            VALID.indexOf(fromUrl) > -1
+              ? fromUrl
+              : VALID.indexOf(stored) > -1
+                ? stored
+                : window.matchMedia &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                  ? "crystal"
+                  : "warm";
+          document.documentElement.dataset.theme = theme;
+        } catch (e) {}
+      })();
+    </script>
+    <!-- Yandex.Metrica counter -->
+    <script type="text/javascript">
+      (function () {
+        var YM_ID = "109955114";
+        if (!/^\d+$/.test(YM_ID)) return;
+        (function (m, e, t, r, i, k, a) {
+          m[i] =
+            m[i] ||
+            function () {
+              (m[i].a = m[i].a || []).push(arguments);
+            };
+          m[i].l = 1 * new Date();
+          for (var j = 0; j < e.scripts.length; j++) {
+            if (e.scripts[j].src === r) {
+              return;
+            }
+          }
+          ((k = e.createElement(t)),
+            (a = e.getElementsByTagName(t)[0]),
+            (k.async = 1),
+            (k.src = r),
+            a.parentNode.insertBefore(k, a));
+        })(
+          window,
+          document,
+          "script",
+          "https://mc.yandex.ru/metrika/tag.js",
+          "ym"
+        );
+        ym(+YM_ID, "init", {
+          clickmap: true,
+          trackLinks: true,
+          accurateTrackBounce: true,
+          webvisor: true,
+          trackHash: true
+        });
+        // Expose the counter id so main.js can send reachGoal events / params.
+        // Only set when a real id was injected (preview keeps the placeholder).
+        window.__ymId = +YM_ID;
+      })();
+    </script>
+    <noscript
+      ><div>
+        <img
+          src="https://mc.yandex.ru/watch/109955114"
+          style="position: absolute; left: -9999px"
+          alt=""
+        /></div
+    ></noscript>
+    <!-- /Yandex.Metrica counter -->
+  </head>
+  <body>
+    <div class="page-aurora" aria-hidden="true">
+      <span class="page-aurora__blob page-aurora__blob--1"></span>
+      <span class="page-aurora__blob page-aurora__blob--2"></span>
+      <span class="page-aurora__blob page-aurora__blob--3"></span>
+      <span class="page-aurora__blob page-aurora__blob--4"></span>
+    </div>
+    <nav class="nav" aria-label="Main navigation">
+      <div class="nav-inner">
+        <a href="#hero" class="brand">
+          <span class="brand-mark">
+            <img
+              class="brand-icon airi-logo--standard"
+              src="assets/airi-icon.png"
+              width="32"
+              height="32"
+              alt="AIRI"
+              decoding="async"
+            />
+            <img
+              class="airi-logo airi-logo--anniversary airi-logo--warm"
+              src="assets/airi-5-logo.png"
+              width="1741"
+              height="719"
+              alt="AIRI 5 лет"
+              decoding="async"
+            />
+            <img
+              class="airi-logo airi-logo--anniversary airi-logo--crystal"
+              src="assets/airi-5-logo-white.png"
+              width="1741"
+              height="719"
+              alt="AIRI 5 лет"
+              decoding="async"
+            />
+          </span>
+          <span class="maestro-wordmark">MAESTRO</span>
+        </a>
+
+        <ul class="nav-links" id="nav-links">
+          <li><a href="#pillars" data-i18n="nav.how">Как работает</a></li>
+          <li><a href="#benefits" data-i18n="nav.benefits">Преимущества</a></li>
+          <li><a href="#stack" data-i18n="nav.stack">Стек</a></li>
+          <li><a href="#demo" data-i18n="nav.demo">Демо</a></li>
+          <li><a href="#skill" data-i18n="nav.install">Установка</a></li>
+          <li class="nav-links-cta">
+            <a
+              href="https://github.com/AIRI-MAESTRO/maestro-ui"
+              data-i18n="nav.github"
+              target="_blank"
+              rel="noopener"
+              >GitHub</a
+            >
+          </li>
+        </ul>
+
+        <div class="nav-controls">
+          <div class="pill-group" role="group" aria-label="Language">
+            <button
+              class="pill-btn active"
+              data-lang-btn="ru"
+              aria-pressed="true"
+              data-i18n="lang.ru"
+            >
+              RU
+            </button>
+            <button
+              class="pill-btn"
+              data-lang-btn="en"
+              aria-pressed="false"
+              data-i18n="lang.en"
+            >
+              EN
+            </button>
+          </div>
+
+          <div
+            class="pill-group"
+            data-theme-switch
+            role="group"
+            aria-label="Theme"
+          >
+            <button
+              class="pill-btn pill-btn--icon active"
+              type="button"
+              data-theme-btn="warm"
+              aria-pressed="true"
+              data-i18n-title="theme.warm"
+              title="Светлая"
+            >
+              <svg
+                class="theme-ico theme-ico--sun"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4.5" fill="currentColor" />
+                <g
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                >
+                  <path d="M12 1.5v3" />
+                  <path d="M12 19.5v3" />
+                  <path d="M1.5 12h3" />
+                  <path d="M19.5 12h3" />
+                  <path d="M4.6 4.6l2.1 2.1" />
+                  <path d="M17.3 17.3l2.1 2.1" />
+                  <path d="M19.4 4.6l-2.1 2.1" />
+                  <path d="M6.7 17.3l-2.1 2.1" />
+                </g>
+              </svg>
+              <span class="sr-only" data-i18n="theme.warm">Светлая</span>
+            </button>
+            <button
+              class="pill-btn pill-btn--icon"
+              type="button"
+              data-theme-btn="crystal"
+              aria-pressed="false"
+              data-i18n-title="theme.dark"
+              title="Тёмная"
+            >
+              <svg
+                class="theme-ico theme-ico--moon"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <path
+                  d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span class="sr-only" data-i18n="theme.dark">Тёмная</span>
+            </button>
+          </div>
+
+          <a
+            href="https://github.com/AIRI-MAESTRO/maestro-ui"
+            class="btn btn-primary nav-github"
+            data-i18n="nav.github"
+            target="_blank"
+            rel="noopener"
+            >GitHub</a
+          >
+
+          <a
+            href="https://airi-maestro.github.io/maestro-docs/"
+            data-doc-path=""
+            class="btn btn-secondary nav-docs"
+            data-i18n="nav.docs"
+            target="_blank"
+            rel="noopener"
+            >Документация</a
+          >
+
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-label="Меню"
+            aria-expanded="false"
+            aria-controls="nav-links"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <path d="M4 7h16" />
+              <path d="M4 12h16" />
+              <path d="M4 17h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <header class="hero" id="hero">
+      <div class="container hero-grid">
+        <div class="hero-content reveal">
+          <div class="badge">
+            <span class="badge-dot"></span>
+            <span data-i18n="hero.badge"
+              >Открытый инструмент для цепочек рассуждений и действий</span
+            >
+          </div>
+          <h1>
+            <span class="maestro-wordmark">MAESTRO</span>
+            <span data-i18n="hero.title">делает вашего агента умнее</span>
+          </h1>
+          <p class="hero-lead-detail" data-i18n="hero.subtitle.detail">
+            За счёт цепочек рассуждений и действий — готовых к запуску,
+            сохранению и эволюции прямо в вашем агенте.
+          </p>
+          <div class="hero-actions">
+            <div class="hero-actions-pair">
+              <a
+                href="#demo"
+                class="btn btn-primary btn-lg hero-example-link"
+                data-i18n="hero.cta.primary"
+                >Смотреть пример</a
+              >
+              <a
+                href="assets/maestro-e2e-60s.mp4"
+                class="btn btn-primary btn-lg hero-video-mobile"
+                data-hero-video-open
+                lang="ru"
+                >Смотреть видео</a
+              >
+              <a
+                href="#skill"
+                class="btn btn-secondary btn-lg"
+                data-i18n="hero.cta.secondary"
+                >Установить</a
+              >
+            </div>
+          </div>
+          <div class="hero-stats">
+            <div class="stat">
+              <span class="stat-value" data-i18n="hero.stat1.value"
+                >≈1 мин</span
+              >
+              <span class="stat-label" data-i18n="hero.stat1.label"
+                >до первого агента</span
+              >
+            </div>
+            <div class="stat">
+              <span class="stat-value">TUI + CLI</span>
+              <span class="stat-label" data-i18n="hero.stat2.label"
+                >один инструмент</span
+              >
+            </div>
+            <div class="stat">
+              <span class="stat-value">100%</span>
+              <span class="stat-label" data-i18n="hero.stat3.label"
+                >открытый код</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal reveal-delay-1">
+          <div class="hero-doodles" data-parallax aria-hidden="true">
+            <span
+              class="doodle doodle-diamond"
+              style="
+                --top: 6%;
+                --left: 2%;
+                --size: 30px;
+                --delay: 0s;
+                --depth: 24;
+              "
+            ></span>
+            <span
+              class="doodle doodle-ring"
+              style="
+                --top: 14%;
+                --left: 84%;
+                --size: 42px;
+                --delay: 1.1s;
+                --depth: -30;
+              "
+            ></span>
+            <span
+              class="doodle doodle-diamond"
+              style="
+                --top: 74%;
+                --left: 88%;
+                --size: 20px;
+                --delay: 1.8s;
+                --depth: 18;
+              "
+            ></span>
+            <span
+              class="doodle doodle-diamond"
+              style="
+                --top: 80%;
+                --left: 6%;
+                --size: 14px;
+                --delay: 0.6s;
+                --depth: -20;
+              "
+            ></span>
+            <span
+              class="doodle doodle-ring"
+              style="
+                --top: 30%;
+                --left: -4%;
+                --size: 18px;
+                --delay: 2.2s;
+                --depth: 14;
+              "
+            ></span>
+            <span
+              class="doodle doodle-ring"
+              style="
+                --top: 60%;
+                --left: -6%;
+                --size: 24px;
+                --delay: 1.4s;
+                --depth: 22;
+              "
+            ></span>
+          </div>
+          <div class="mascot-glow" aria-hidden="true"></div>
+          <div
+            class="speech-bubble reveal reveal-delay-2"
+            data-i18n="hero.bubble"
+          >
+            Привет! Я Maestric — покажу, как это работает 👋
+          </div>
+          <div
+            class="mascot-stage mascot-stage--hero"
+            data-mood="idle"
+            data-parallax-mascot
+          >
+            <div class="mascot-float">
+              <div class="mascot-body">
+                <img
+                  class="mascot-img mascot-img--gif"
+                  src="assets/hero-mascot.gif"
+                  width="227"
+                  height="256"
+                  alt="Маскот Maestric"
+                  decoding="async"
+                />
+              </div>
+            </div>
+            <span class="mascot-shadow" aria-hidden="true"></span>
+            <div class="mascot-particles" aria-hidden="true"></div>
+          </div>
+          <svg class="crystal-accent" viewBox="0 0 48 48" aria-hidden="true">
+            <polygon
+              points="24,4 40,24 24,44 8,24"
+              fill="var(--crystal)"
+              opacity="0.8"
+            />
+            <polygon points="24,12 32,24 24,36 16,24" fill="var(--accent)" />
+          </svg>
+
+          <a class="hero-video-preview" href="assets/maestro-e2e-60s.mp4" data-hero-video-open lang="ru">
+            <span class="hero-video-cover">
+              <img
+                src="assets/maestro-e2e-poster.webp"
+                width="1080"
+                height="608"
+                alt=""
+                decoding="async"
+                loading="lazy"
+              />
+              <span class="hero-video-play" aria-hidden="true"></span>
+            </span>
+            <span class="hero-video-caption">
+              <strong>Как работает MAESTRO</strong>
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <a href="#marquee" class="scroll-hint" aria-label="Scroll">
+        <span data-i18n="hero.scroll">Листай вниз</span>
+        <span class="scroll-arrow" aria-hidden="true"></span>
+      </a>
+    </header>
+
+    <div class="marquee" id="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span class="marquee-item"
+          ><b data-i18n="marquee.6">Опиши</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.1">Собери</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.2">Запусти</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.3">Эволюционируй</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.4">Сохрани</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.5">Повтори</b
+          ><i class="marquee-sep">◆</i></span
+        >
+        <span class="marquee-item"
+          ><b data-i18n="marquee.6">Опиши</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.1">Собери</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.2">Запусти</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.3">Эволюционируй</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.4">Сохрани</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.5">Повтори</b
+          ><i class="marquee-sep">◆</i></span
+        >
+        <span class="marquee-item"
+          ><b data-i18n="marquee.6">Опиши</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.1">Собери</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.2">Запусти</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.3">Эволюционируй</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.4">Сохрани</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.5">Повтори</b
+          ><i class="marquee-sep">◆</i></span
+        >
+        <span class="marquee-item"
+          ><b data-i18n="marquee.6">Опиши</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.1">Собери</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.2">Запусти</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.3">Эволюционируй</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.4">Сохрани</b><i class="marquee-sep">◆</i
+          ><b data-i18n="marquee.5">Повтори</b
+          ><i class="marquee-sep">◆</i></span
+        >
+      </div>
+    </div>
+
+    <section id="demo" class="demo-section">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="demo.title">Пример работы MAESTRO</h2>
+          <p data-i18n="demo.subtitle">
+            PDF с отчётом → агентная цепочка из 3 шагов → таблица с цифрами.
+          </p>
+        </div>
+        <div class="demo-grid">
+          <div class="terminal reveal">
+            <div class="terminal-bar">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-title">maestro — chat</span>
+              <span class="terminal-mode" data-i18n="demo.mode"
+                >Production</span
+              >
+            </div>
+            <div
+              class="terminal-output"
+              aria-live="polite"
+              aria-label="Terminal demo output"
+            >
+              <div class="terminal-line terminal-line--user">
+                &gt; Достань показатели из квартального отчёта
+              </div>
+            </div>
+            <p class="terminal-note" data-i18n="demo.note">
+              Анимация интерфейса
+            </p>
+          </div>
+          <div class="demo-mascot-wrap reveal reveal-delay-1">
+            <div class="mascot-stage mascot-stage--calm" data-mood="idle">
+              <div class="mascot-float">
+                <div class="mascot-body">
+                  <img
+                    class="mascot-img mascot-img--gif"
+                    src="assets/work.gif"
+                    width="256"
+                    height="238"
+                    alt="Maestric работает за ноутбуком в TUI"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <span class="mascot-shadow" aria-hidden="true"></span>
+              <div class="mascot-particles" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-showcase reveal reveal-delay-2">
+          <div class="demo-showcase-switch">
+            <div
+              class="pill-group"
+              data-demo-view-switch
+              role="group"
+              aria-label="Demo view"
+            >
+              <button
+                class="pill-btn active"
+                type="button"
+                data-demo-view-btn="chain"
+                aria-pressed="true"
+                data-i18n="demo.view.chain"
+              >
+                Формат цепочки
+              </button>
+              <button
+                class="pill-btn"
+                type="button"
+                data-demo-view-btn="terminal"
+                aria-pressed="false"
+                data-i18n="demo.view.terminal"
+              >
+                В терминале
+              </button>
+            </div>
+          </div>
+
+          <div class="demo-view-panel" data-demo-view-panel="chain">
+            <div class="carl-chain">
+              <div class="carl-chain-head">
+                <span class="carl-chain-badge" data-i18n="chain.badge"
+                  >Формат цепочки</span
+                >
+                <h3 class="carl-chain-title" data-i18n="chain.title">
+                  Итоговая цепочка
+                </h3>
+                <span class="carl-chain-count" data-i18n="chain.steps"
+                  >3 шага</span
+                >
+                <span class="carl-chain-task" data-i18n="chain.task">
+                  достать показатели из квартального PDF
+                </span>
+              </div>
+
+              <div class="carl-graph" role="list">
+                <!-- Phase 1 — input: query + data -->
+                <div class="carl-phase carl-phase--io" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step">1</span>
+                    <span class="carl-phase-label" data-i18n="chain.p1"
+                      >Вход</span
+                    >
+                  </div>
+                  <div class="carl-phase-body">
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">💬</span>
+                      <span class="carl-io-txt" data-i18n="chain.query"
+                        >запрос пользователя</span
+                      >
+                    </span>
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">📄</span>
+                      <span class="carl-io-txt">q3-report.pdf</span>
+                    </span>
+                  </div>
+                </div>
+
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+
+                <!-- Phase 2 — the chain (3 steps) -->
+                <div class="carl-phase carl-phase--chain" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-badge" data-i18n="chain.badge"
+                      >Формат цепочки</span
+                    >
+                    <span class="carl-phase-label" data-i18n="chain.p2"
+                      >Цепочка</span
+                    >
+                    <span class="carl-phase-count" data-i18n="chain.steps"
+                      >3 шага</span
+                    >
+                  </div>
+                  <div class="carl-phase-body carl-chain-box">
+                    <button
+                      type="button"
+                      class="carl-node carl-node--llm carl-step-btn"
+                      aria-expanded="false"
+                      aria-controls="carl-step-1"
+                    >
+                      <span class="carl-node-idx">1</span>
+                      <span class="carl-node-name">plan_extraction</span>
+                      <span class="carl-node-type">llm</span>
+                      <span class="carl-step-chevron" aria-hidden="true"></span>
+                    </button>
+                    <span class="carl-link carl-link--v" aria-hidden="true"
+                      ><i class="carl-spark"></i
+                    ></span>
+                    <button
+                      type="button"
+                      class="carl-node carl-node--tool carl-step-btn"
+                      aria-expanded="false"
+                      aria-controls="carl-step-2"
+                    >
+                      <span class="carl-node-idx">2</span>
+                      <span class="carl-node-name">extract_pdf_text</span>
+                      <span class="carl-node-type">tool</span>
+                      <span class="carl-step-chevron" aria-hidden="true"></span>
+                    </button>
+                    <span class="carl-link carl-link--v" aria-hidden="true"
+                      ><i class="carl-spark"></i
+                    ></span>
+                    <button
+                      type="button"
+                      class="carl-node carl-node--struct carl-step-btn"
+                      aria-expanded="false"
+                      aria-controls="carl-step-3"
+                    >
+                      <span class="carl-node-idx">3</span>
+                      <span class="carl-node-name">normalise_financials</span>
+                      <span class="carl-node-type">structured_output</span>
+                      <span class="carl-step-chevron" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                </div>
+
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+
+                <!-- Phase 3 — result -->
+                <div class="carl-phase carl-phase--out" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step carl-phase-step--ok">✓</span>
+                    <span class="carl-phase-label" data-i18n="chain.p3"
+                      >Результат</span
+                    >
+                    <span class="carl-phase-count carl-phase-count--crystal"
+                      >QuarterlyFinancials</span
+                    >
+                  </div>
+                  <div class="carl-phase-body">
+                    <dl class="carl-payload-grid">
+                      <div class="carl-field">
+                        <dt>period</dt>
+                        <dd>Q3 2025</dd>
+                      </div>
+                      <div class="carl-field">
+                        <dt>currency</dt>
+                        <dd>USD</dd>
+                      </div>
+                      <div class="carl-field">
+                        <dt>revenue</dt>
+                        <dd>$4.20M</dd>
+                      </div>
+                      <div class="carl-field">
+                        <dt>net_income</dt>
+                        <dd>$0.91M</dd>
+                      </div>
+                    </dl>
+                    <span class="carl-payload-saved" data-i18n="chain.saved"
+                      >💾 memory_card · fin-report</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <p class="carl-steps-hint" data-i18n="chain.hint">
+                Нажмите на шаг — развернётся его техническая структура
+              </p>
+
+              <div class="carl-step-panels">
+                <div
+                  class="carl-step-panel"
+                  id="carl-step-1"
+                  role="region"
+                  aria-label="plan_extraction"
+                  hidden
+                >
+                  <div class="carl-spec carl-spec--llm">
+                    <div class="carl-spec-head">
+                      <span class="carl-spec-num">1</span>
+                      <code class="carl-spec-title">plan_extraction</code>
+                      <span class="carl-spec-type">llm</span>
+                    </div>
+                    <dl class="carl-fields">
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">step_type</dt>
+                        <dd class="carl-fval"><code>llm</code></dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">aim</dt>
+                        <dd class="carl-fval" data-i18n="step.s1.aim">
+                          понять структуру отчёта и спланировать извлечение
+                          нужных показателей
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">reasoning_questions</dt>
+                        <dd class="carl-fval" data-i18n="step.s1.rq">
+                          Где в отчёте итоговые цифры? Какой период и валюта?
+                          Есть ли сноски о рисках или пересчётах?
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">step_context_queries</dt>
+                        <dd class="carl-fval carl-fval--chips">
+                          <span class="carl-chip" data-i18n="step.s1.ctx1"
+                            >структура квартального отчёта</span
+                          >
+                          <span class="carl-chip" data-i18n="step.s1.ctx2"
+                            >ключевые метрики P&amp;L</span
+                          >
+                          <span class="carl-chip" data-i18n="step.s1.ctx3"
+                            >валюта и отчётный период</span
+                          >
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">stage_action</dt>
+                        <dd class="carl-fval" data-i18n="step.s1.stage">
+                          определи разделы PDF и список метрик — выручка, чистая
+                          прибыль, расходы; зафиксируй валюту и отчётный период
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">example_reasoning</dt>
+                        <dd class="carl-fval" data-i18n="step.s1.ex">
+                          напр.: строка «Revenue» в итоговой таблице → revenue;
+                          суммы в тыс. → перевести в абсолютные значения валюты
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">dependencies</dt>
+                        <dd class="carl-fval"><code>[]</code></dd>
+                      </div>
+                    </dl>
+                    <div class="carl-fgroup">
+                      <span class="carl-fgroup-label">llm_config</span>
+                      <dl class="carl-fields carl-fields--nested">
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">model</dt>
+                          <dd class="carl-fval"><code>auto</code></dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">temperature</dt>
+                          <dd class="carl-fval"><code>0.2</code></dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="carl-step-panel"
+                  id="carl-step-2"
+                  role="region"
+                  aria-label="extract_pdf_text"
+                  hidden
+                >
+                  <div class="carl-spec carl-spec--tool">
+                    <div class="carl-spec-head">
+                      <span class="carl-spec-num">2</span>
+                      <code class="carl-spec-title">extract_pdf_text</code>
+                      <span class="carl-spec-type">tool</span>
+                    </div>
+                    <dl class="carl-fields">
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">step_type</dt>
+                        <dd class="carl-fval"><code>tool</code></dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">aim</dt>
+                        <dd class="carl-fval" data-i18n="step.s2.aim">
+                          извлечь из PDF чистый текст и таблицы для дальнейшей
+                          структуризации
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">dependencies</dt>
+                        <dd class="carl-fval"><code>[1]</code></dd>
+                      </div>
+                    </dl>
+                    <div class="carl-fgroup">
+                      <span class="carl-fgroup-label">step_config</span>
+                      <dl class="carl-fields carl-fields--nested">
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">tool_name</dt>
+                          <dd class="carl-fval"><code>pdf_extractor</code></dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">input_mapping</dt>
+                          <dd class="carl-fval">
+                            <code>pdf_path ← $inputs.pdf_path</code>
+                          </dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">output_key</dt>
+                          <dd class="carl-fval"><code>extracted</code></dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="carl-step-panel"
+                  id="carl-step-3"
+                  role="region"
+                  aria-label="normalise_financials"
+                  hidden
+                >
+                  <div class="carl-spec carl-spec--struct">
+                    <div class="carl-spec-head">
+                      <span class="carl-spec-num">3</span>
+                      <code class="carl-spec-title">normalise_financials</code>
+                      <span class="carl-spec-type">structured_output</span>
+                    </div>
+                    <dl class="carl-fields">
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">step_type</dt>
+                        <dd class="carl-fval">
+                          <code>structured_output</code>
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">aim</dt>
+                        <dd class="carl-fval" data-i18n="step.s3.aim">
+                          привести извлечённый текст к строгой схеме
+                          QuarterlyFinancials
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">instruction</dt>
+                        <dd class="carl-fval" data-i18n="step.s3.instruction">
+                          распарсить текст в форму QuarterlyFinancials: числа —
+                          в единицах валюты, неуверенные поля пропускать, а не
+                          угадывать
+                        </dd>
+                      </div>
+                      <div class="carl-frow">
+                        <dt class="carl-fkey">dependencies</dt>
+                        <dd class="carl-fval"><code>[2]</code></dd>
+                      </div>
+                    </dl>
+                    <div class="carl-fgroup">
+                      <span class="carl-fgroup-label">step_config</span>
+                      <dl class="carl-fields carl-fields--nested">
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">input_source</dt>
+                          <dd class="carl-fval"><code>$history[-1]</code></dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">schema_name</dt>
+                          <dd class="carl-fval">
+                            <code>QuarterlyFinancials</code>
+                          </dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">strict_json</dt>
+                          <dd class="carl-fval"><code>true</code></dd>
+                        </div>
+                        <div class="carl-frow">
+                          <dt class="carl-fkey">output_schema</dt>
+                          <dd class="carl-fval carl-fval--chips">
+                            <span class="carl-chip">period</span>
+                            <span class="carl-chip">currency</span>
+                            <span class="carl-chip">revenue</span>
+                            <span class="carl-chip">net_income</span>
+                            <span class="carl-chip">total_expenses</span>
+                            <span class="carl-chip carl-chip--opt"
+                              >notable_alerts?</span
+                            >
+                          </dd>
+                        </div>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-view-panel" data-demo-view-panel="terminal" hidden>
+            <div class="demo-terminal-shots">
+              <figure class="demo-terminal-shot">
+                <img
+                  src="assets/chat_maestro.jpg"
+                  width="1280"
+                  height="720"
+                  alt=""
+                  data-i18n-alt="demo.terminal.alt1"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption data-i18n="demo.terminal.caption1">
+                  Сборка цепочки в режиме чата
+                </figcaption>
+              </figure>
+              <figure class="demo-terminal-shot">
+                <img
+                  src="assets/chain_example_maestro.jpg"
+                  width="1280"
+                  height="720"
+                  alt=""
+                  data-i18n-alt="demo.terminal.alt2"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption data-i18n="demo.terminal.caption2">
+                  DAG цепочки и детали шага
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pillars" class="pillars">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="pillars.title">
+            Один поток — от идеи до готового агента
+          </h2>
+          <p data-i18n="pillars.subtitle">
+            Генерация, запуск и эволюция — три шага одного потока
+          </p>
+        </div>
+
+        <div class="pillars-row reveal">
+          <div class="scene scene--gen">
+            <div class="mascot-stage mascot-stage--scene" data-mood="idle">
+              <div class="mascot-float">
+                <div class="mascot-body">
+                  <img
+                    class="mascot-img"
+                    src="assets/magic_wand_slow.gif"
+                    width="256"
+                    height="256"
+                    alt="Maestric строит цепочку агента из запроса"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <span class="mascot-shadow" aria-hidden="true"></span>
+              <div class="mascot-particles" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="pillar-text">
+            <span class="text-label" data-i18n="p1.tag">Шаг 1 · Генерация</span>
+            <h3 data-i18n="p1.title">
+              MAESTRO собирает агента из твоих слов
+            </h3>
+            <p data-i18n="p1.desc">
+              Опиши цель — MAESTRO разберёт задачу, спланирует шаги и
+              построит готовую цепочку агента.
+            </p>
+            <a href="#stack" class="pillar-link" data-i18n="pillar.learn"
+              >Подробнее в стеке</a
+            >
+          </div>
+        </div>
+
+        <div class="pillars-row pillars-row--reverse reveal">
+          <div class="scene scene--run">
+            <div class="chip chip--tl">
+              <span data-i18n="p2.chip1">Песочница</span>
+            </div>
+            <div class="chip chip--tr">
+              <span data-i18n="p2.chip2">Поток токенов</span>
+            </div>
+            <div class="chip chip--br">
+              <span data-i18n="p2.chip3">Инструменты и навыки</span>
+            </div>
+            <div class="mascot-stage mascot-stage--scene" data-mood="work">
+              <div class="mascot-float">
+                <div class="mascot-body">
+                  <img
+                    class="mascot-img"
+                    src="assets/start_button.gif"
+                    width="255"
+                    height="166"
+                    alt="Maestric запускает цепочку инструментов"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <span class="mascot-shadow" aria-hidden="true"></span>
+              <div class="mascot-particles" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="pillar-text">
+            <span class="text-label" data-i18n="p2.tag">Шаг 2 · Запуск</span>
+            <h3 data-i18n="p2.title">Агент работает у тебя на глазах</h3>
+            <p data-i18n="p2.desc">
+              MAESTRO запускает шаги в изолированной песочнице и показывает
+              прогресс в реальном времени — виден каждый шаг агента.
+            </p>
+            <a href="#demo" class="pillar-link" data-i18n="pillar.demo"
+              >Как работает MAESTRO</a
+            >
+          </div>
+        </div>
+
+        <div class="pillars-row reveal">
+          <div class="scene scene--evo">
+            <div class="chip chip--tl">
+              <span data-i18n="p3.chip1">Генетический алгоритм</span>
+            </div>
+            <div class="chip chip--tr">
+              <span data-i18n="p3.chip2">Несколько метрик</span>
+            </div>
+            <div class="chip chip--br">
+              <span data-i18n="p3.chip3">Сильнейший вариант</span>
+            </div>
+            <div class="mascot-stage mascot-stage--scene" data-mood="success">
+              <div class="mascot-float">
+                <div class="mascot-body">
+                  <img
+                    class="mascot-img mascot-img--gif"
+                    src="assets/evo1-3.gif"
+                    width="256"
+                    height="256"
+                    alt="Maestric эволюционирует: три поколения становятся сильнее"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <span class="mascot-shadow" aria-hidden="true"></span>
+              <div class="mascot-particles" aria-hidden="true"></div>
+            </div>
+          </div>
+          <div class="pillar-text">
+            <span class="text-label" data-i18n="p3.tag">Шаг 3 · Эволюция</span>
+            <h3 data-i18n="p3.title">Агент становится лучше сам</h3>
+            <p data-i18n="p3.desc">
+              MAESTRO перебирает варианты цепочки по нескольким метрикам и
+              продвигает сильнейший в стабильную версию.
+            </p>
+            <a href="#stack" class="pillar-link" data-i18n="pillar.learn"
+              >Подробнее в стеке</a
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits" class="benefits">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="benefits.title">
+            Зачем агентная цепочка, а не один ответ в чате
+          </h2>
+          <p data-i18n="benefits.subtitle">
+            Конкретная польза на каждом этапе работы с агентом
+          </p>
+        </div>
+        <div class="benefits-grid">
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b1.tag"
+              >Один запрос</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M13 2L4.5 13.5H11l-1 8.5L19.5 10.5H13z" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b1.title">Агент за минуту</h3>
+            <p data-i18n="benefits.b1.desc">
+              Опиши цель словами — MAESTRO соберёт и запустит агента.
+              Обычно это занимает около минуты.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b2.tag"
+              >История версий</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 12a9 9 0 1 0 2.6-6.4" />
+                <path d="M3 4v4h4" />
+                <path d="M12 8v4l3 2" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b2.title">Ничего не теряется</h3>
+            <p data-i18n="benefits.b2.desc">
+              MAESTRO хранит каждую цепочку со всеми её версиями — повтори,
+              сравни или откатись в один клик.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b3.tag"
+              >Прозрачно</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b3.title">Видно каждый шаг</h3>
+            <p data-i18n="benefits.b3.desc">
+              Видно, что и зачем делает агент: каждый шаг и результат в реальном
+              времени, в изолированной песочнице.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b4.tag"
+              >Авто-улучшение</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 17l6-6 4 4 7-7.5" />
+                <path d="M17 7.5h4v4" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b4.title">
+              Автоулучшение цепочки
+            </h3>
+            <p data-i18n="benefits.b4.desc">
+              Не нужно менять промпт, MAESTRO пробует варианты цепочки и
+              оставляет тот, что даёт лучший результат по метрикам.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b5.tag"
+              >TUI + CLI</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="3" y="4" width="18" height="16" rx="2" />
+                <path d="M7 9l3 3-3 3" />
+                <path d="M13 15h4" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b5.title">Из терминала — в продакшен</h3>
+            <p data-i18n="benefits.b5.desc">
+              Один и тот же MAESTRO в интерактивном режиме и в CI —
+              автоматизируй агентов в пайплайнах без переписывания.
+            </p>
+          </article>
+
+          <article class="benefit-card">
+            <span
+              class="text-label benefit-card-label"
+              data-i18n="benefits.b6.tag"
+              >Открытый код</span
+            >
+            <span class="benefit-ico" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 3l9 5-9 5-9-5z" />
+                <path d="M3 13l9 5 9-5" />
+              </svg>
+            </span>
+            <h3 data-i18n="benefits.b6.title">Твой стек, твои правила</h3>
+            <p data-i18n="benefits.b6.desc">
+              Свои инструменты и навыки, подключение внешних сервисов и
+              ребрендинг — без привязки к вендору.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="stack.title">Что под капотом</h2>
+          <p data-i18n="stack.subtitle">
+            MAESTRO — экосистема для генерации и эволюции цепочек
+          </p>
+        </div>
+        <div class="stack-diagram reveal">
+          <div class="stack-care" data-i18n="stack.care.label">
+            MAESTRO
+          </div>
+          <div class="stack-connector" aria-hidden="true"></div>
+          <div class="stack-modules">
+            <div class="stack-module stack-module--mage">
+              <h3 data-i18n="stack.mage.name">Генерация</h3>
+              <div class="role" data-i18n="stack.mage.role">Сборка цепочки</div>
+              <p data-i18n="stack.mage.desc">
+                Превращает твой запрос в готовую цепочку агента.
+              </p>
+            </div>
+            <div class="stack-module stack-module--carl">
+              <h3 data-i18n="stack.carl.name">Формат цепочки</h3>
+              <div class="role" data-i18n="stack.carl.role">Агентные цепочки</div>
+              <p data-i18n="stack.carl.desc">
+                Как описаны шаги: цель, инструменты, результат.
+              </p>
+            </div>
+            <div class="stack-module stack-module--memory">
+              <h3 data-i18n="stack.memory.name">Память</h3>
+              <div class="role" data-i18n="stack.memory.role">
+                Хранение версий
+              </div>
+              <p data-i18n="stack.memory.desc">
+                Хранит агентов, цепочки и все их версии.
+              </p>
+            </div>
+            <div class="stack-module stack-module--platform">
+              <h3 data-i18n="stack.platform.name">Эволюция</h3>
+              <div class="role" data-i18n="stack.platform.role">
+                Отбор лучших
+              </div>
+              <p data-i18n="stack.platform.desc">
+                Улучшает цепочки и продвигает лучшие варианты.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evolution" class="evolution">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="evolution.title">Подробнее про эволюцию</h2>
+          <p data-i18n="evolution.subtitle">
+            Цепочка улучшается сама — без ручной правки промптов
+          </p>
+        </div>
+        <div class="evolution-grid reveal">
+          <article class="evolution-step">
+            <span class="evolution-step-num">1</span>
+            <h3 data-i18n="evolution.s1.title">Варианты</h3>
+            <p data-i18n="evolution.s1.desc">
+              MAESTRO создаёт несколько версий цепочки — с разными шагами и
+              формулировками.
+            </p>
+          </article>
+          <article class="evolution-step">
+            <span class="evolution-step-num">2</span>
+            <h3 data-i18n="evolution.s2.title">Метрики</h3>
+            <p data-i18n="evolution.s2.desc">
+              Каждый вариант прогоняется на тестах — качество считается по
+              нескольким метрикам.
+            </p>
+          </article>
+          <article class="evolution-step">
+            <span class="evolution-step-num">3</span>
+            <h3 data-i18n="evolution.s3.title">Отбор</h3>
+            <p data-i18n="evolution.s3.desc">
+              Лучший вариант сохраняется как новая стабильная версия — готов к
+              повторному запуску.
+            </p>
+          </article>
+        </div>
+
+        <div class="evolution-showcase reveal reveal-delay-1">
+          <p class="evolution-example-label" data-i18n="evolution.example">
+            Пример: пресет Summarizer · 8 тестовых кейсов · метрика ROUGE-L
+          </p>
+
+          <div class="evolution-metrics">
+            <div class="evolution-metric">
+              <span class="evolution-metric-label" data-i18n="evolution.metric.start"
+                >Стартовый fitness</span
+              >
+              <span class="evolution-metric-value">0.582</span>
+              <span class="evolution-metric-hint" data-i18n="evolution.metric.startHint"
+                >исходная цепочка</span
+              >
+            </div>
+            <div class="evolution-metric evolution-metric--best">
+              <span class="evolution-metric-label" data-i18n="evolution.metric.best"
+                >Лучший fitness</span
+              >
+              <span class="evolution-metric-value">0.724</span>
+              <span class="evolution-metric-hint" data-i18n="evolution.metric.bestHint"
+                >после 10 мутантов</span
+              >
+            </div>
+            <div class="evolution-metric">
+              <span class="evolution-metric-label">ROUGE-L</span>
+              <span class="evolution-metric-value evolution-metric-value--delta"
+                >+0.142</span
+              >
+              <span class="evolution-metric-hint" data-i18n="evolution.metric.rougeHint"
+                >0.582 → 0.724</span
+              >
+            </div>
+            <div class="evolution-metric">
+              <span class="evolution-metric-label" data-i18n="evolution.metric.mutants"
+                >Мутанты</span
+              >
+              <span class="evolution-metric-value">10 / 40</span>
+              <span class="evolution-metric-hint" data-i18n="evolution.metric.mutantsHint"
+                >оценено / бюджет</span
+              >
+            </div>
+          </div>
+
+          <div class="evolution-compare">
+            <article class="carl-chain evolution-chain evolution-chain--before">
+              <div class="carl-chain-head">
+                <span
+                  class="evolution-chain-label evolution-chain-label--before"
+                  data-i18n="evolution.before"
+                  >Было</span
+                >
+                <span class="carl-chain-count" data-i18n="evolution.beforeSteps"
+                  >1 шаг</span
+                >
+                <span class="carl-chain-task" data-i18n="evolution.task">
+                  сжать абзац в одно предложение
+                </span>
+              </div>
+              <div class="carl-graph evolution-graph">
+                <div class="carl-phase carl-phase--io" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step">1</span>
+                    <span class="carl-phase-label" data-i18n="chain.p1">Вход</span>
+                  </div>
+                  <div class="carl-phase-body">
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">📝</span>
+                      <span class="carl-io-txt" data-i18n="evolution.inputSample"
+                        >абзац из eval.jsonl</span
+                      >
+                    </span>
+                  </div>
+                </div>
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+                <div class="carl-phase carl-phase--chain" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-label" data-i18n="chain.p2">Цепочка</span>
+                    <span class="carl-phase-count" data-i18n="evolution.beforeSteps"
+                      >1 шаг</span
+                    >
+                  </div>
+                  <div class="carl-phase-body carl-chain-box">
+                    <div class="carl-node carl-node--llm">
+                      <span class="carl-node-idx">1</span>
+                      <span class="carl-node-name">summarize_paragraph</span>
+                      <span class="carl-node-type">llm</span>
+                    </div>
+                  </div>
+                </div>
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+                <div class="carl-phase carl-phase--out" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step carl-phase-step--ok">✓</span>
+                    <span class="carl-phase-label" data-i18n="chain.p3">Результат</span>
+                  </div>
+                  <div class="carl-phase-body">
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">💬</span>
+                      <span class="carl-io-txt" data-i18n="evolution.beforeResult"
+                        >одно предложение (часто теряет детали)</span
+                      >
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p class="evolution-chain-foot" data-i18n="evolution.beforeFoot">
+                Один LLM-шаг: «прочитай и сожми в предложение» — ROUGE-L 0.582
+              </p>
+            </article>
+
+            <div class="evolution-compare-arrow" aria-hidden="true">
+              <span class="evolution-compare-arrow-ico">→</span>
+              <span class="evolution-compare-arrow-label" data-i18n="evolution.arrow"
+                >эволюция</span
+              >
+            </div>
+
+            <article class="carl-chain evolution-chain evolution-chain--after">
+              <div class="carl-chain-head">
+                <span
+                  class="evolution-chain-label evolution-chain-label--after"
+                  data-i18n="evolution.after"
+                  >Стало</span
+                >
+                <span class="carl-chain-count" data-i18n="evolution.afterSteps"
+                  >3 шага</span
+                >
+                <span class="carl-chain-task" data-i18n="evolution.task">
+                  сжать абзац в одно предложение
+                </span>
+              </div>
+              <div class="carl-graph evolution-graph">
+                <div class="carl-phase carl-phase--io" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step">1</span>
+                    <span class="carl-phase-label" data-i18n="chain.p1">Вход</span>
+                  </div>
+                  <div class="carl-phase-body">
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">📝</span>
+                      <span class="carl-io-txt" data-i18n="evolution.inputSample"
+                        >абзац из eval.jsonl</span
+                      >
+                    </span>
+                  </div>
+                </div>
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+                <div class="carl-phase carl-phase--chain" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-label" data-i18n="chain.p2">Цепочка</span>
+                    <span class="carl-phase-count" data-i18n="evolution.afterSteps"
+                      >3 шага</span
+                    >
+                  </div>
+                  <div class="carl-phase-body carl-chain-box">
+                    <div class="carl-node carl-node--llm carl-node--evo">
+                      <span class="carl-node-idx">1</span>
+                      <span class="carl-node-name">analyze_structure</span>
+                      <span class="carl-node-type">llm</span>
+                    </div>
+                    <span class="carl-link carl-link--v" aria-hidden="true"
+                      ><i class="carl-spark"></i
+                    ></span>
+                    <div class="carl-node carl-node--llm carl-node--evo">
+                      <span class="carl-node-idx">2</span>
+                      <span class="carl-node-name">compress_summary</span>
+                      <span class="carl-node-type">llm</span>
+                    </div>
+                    <span class="carl-link carl-link--v" aria-hidden="true"
+                      ><i class="carl-spark"></i
+                    ></span>
+                    <div class="carl-node carl-node--struct carl-node--evo">
+                      <span class="carl-node-idx">3</span>
+                      <span class="carl-node-name">verify_meaning</span>
+                      <span class="carl-node-type">evaluation</span>
+                    </div>
+                  </div>
+                </div>
+                <span class="carl-link" aria-hidden="true"
+                  ><i class="carl-spark"></i
+                ></span>
+                <div class="carl-phase carl-phase--out" role="listitem">
+                  <div class="carl-phase-head">
+                    <span class="carl-phase-step carl-phase-step--ok">✓</span>
+                    <span class="carl-phase-label" data-i18n="chain.p3">Результат</span>
+                  </div>
+                  <div class="carl-phase-body">
+                    <span class="carl-io-row">
+                      <span class="carl-io-ic" aria-hidden="true">💬</span>
+                      <span class="carl-io-txt" data-i18n="evolution.afterResult"
+                        >точное предложение, совпадает с expected</span
+                      >
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <p class="evolution-chain-foot" data-i18n="evolution.afterFoot">
+                Анализ → сжатие → проверка смысла — ROUGE-L 0.724
+              </p>
+            </article>
+          </div>
+
+          <div class="evolution-terminals">
+            <div class="terminal evolution-terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-title">maestro — evolve</span>
+                <span class="terminal-mode" data-i18n="evolution.terminal.mode"
+                  >CLI</span
+                >
+              </div>
+              <div
+                class="terminal-output evolution-terminal-log"
+                aria-live="polite"
+                aria-label="Evolution CLI demo"
+              ></div>
+              <p class="terminal-note" data-i18n="evolution.terminal.logNote">
+                Запуск эволюции и отбор лучшего мутанта
+              </p>
+            </div>
+            <div class="terminal evolution-terminal">
+              <div class="terminal-bar">
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-dot"></span>
+                <span class="terminal-title">maestro — evolution</span>
+                <span class="terminal-mode" data-i18n="demo.mode">Production</span>
+              </div>
+              <div
+                class="terminal-output evolution-terminal-status"
+                aria-live="polite"
+                aria-label="Evolution status demo"
+              ></div>
+              <p class="terminal-note" data-i18n="evolution.terminal.statusNote">
+                Статус прогона и кривая fitness в TUI
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skill" class="install skill-install">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="skill.title">Добавь MAESTRO как навык своему агенту</h2>
+          <p data-i18n="skill.subtitle">
+            Дай агенту управлять MAESTRO CLI — Claude Code, Codex, Hermes или
+            OpenClaw.
+          </p>
+        </div>
+
+        <div class="install-grid reveal">
+          <ol class="install-steps">
+            <li class="install-step">
+              <span class="install-step-num">1</span>
+              <div class="install-step-body">
+                <h3 data-i18n="skill.s1.title">Установи навык</h3>
+                <p data-i18n="skill.s1.desc">
+                  Одна команда ставит навык в каталог skills твоего агента —
+                  Claude Code, Codex, Hermes или OpenClaw.
+                </p>
+                <div class="code-block">
+                  <code
+                    ><span class="code-prompt">$</span>
+                    <span class="code-text"
+                      >uvx maestro-install skill</span
+                    ></code
+                  >
+                  <button
+                    class="copy-btn"
+                    type="button"
+                    data-cmd="uvx maestro-install skill"
+                    data-i18n-title="install.copy"
+                    title="Скопировать"
+                  >
+                    <svg
+                      class="copy-ico"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path
+                        d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                      />
+                    </svg>
+                    <span class="copy-label" data-i18n="install.copy"
+                      >Копировать</span
+                    >
+                  </button>
+                </div>
+              </div>
+            </li>
+
+            <li class="install-step">
+              <span class="install-step-num">2</span>
+              <div class="install-step-body">
+                <h3 data-i18n="skill.s2.title">Используй в агенте</h3>
+                <p data-i18n="skill.s2.desc">
+                  Готово — открой агента и вызови <code>/maestro-cli</code> или
+                  просто опиши задачу для MAESTRO: навык подхватится сам.
+                </p>
+              </div>
+            </li>
+          </ol>
+
+          <aside class="install-aside">
+            <h4 data-i18n="skill.aside.title">После установки</h4>
+            <ul class="install-reqs">
+              <li>
+                <span class="req-dot"></span
+                ><span data-i18n="skill.req1"
+                  >Команда maestro должна быть доступна в PATH</span
+                >
+              </li>
+              <li>
+                <span class="req-dot"></span
+                ><span data-i18n="skill.req2"
+                  >Вызови /maestro-cli или опиши задачу словами</span
+                >
+              </li>
+            </ul>
+            <div class="install-oneliner">
+              <span class="install-oneliner-label" data-i18n="skill.check"
+                >Проверь навык:</span
+              >
+              <div class="code-block code-block--compact">
+                <code
+                  ><span class="code-prompt">$</span>
+                  <span class="code-text">maestro doctor</span></code
+                >
+                <button
+                  class="copy-btn"
+                  type="button"
+                  data-cmd="maestro doctor"
+                  data-i18n-title="install.copy"
+                  title="Скопировать"
+                >
+                  <svg
+                    class="copy-ico"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect x="9" y="9" width="11" height="11" rx="2" />
+                    <path
+                      d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                    />
+                  </svg>
+                  <span class="copy-label" data-i18n="install.copy"
+                    >Копировать</span
+                  >
+                </button>
+              </div>
+            </div>
+            <a
+              href="https://airi-maestro.github.io/maestro-docs/care/skill/overview/"
+              data-doc-path="care/skill/overview/"
+              class="pillar-link"
+              data-i18n="skill.docs"
+              target="_blank"
+              rel="noopener"
+              >Документация по навыку</a
+            >
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section id="install" class="install">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 data-i18n="install.title">Используй MAESTRO как отдельного агента</h2>
+        </div>
+        <div class="install-grid install-grid--ui surface-panel reveal">
+          <ol class="install-steps">
+            <li class="install-step">
+              <span class="install-step-num">1</span>
+              <div class="install-step-body">
+                <h3 data-i18n="install.s1.title">Установи и запусти MAESTRO UI</h3>
+                <p data-i18n="install.s1.desc">Установи Git, uv, Node.js 24 и pnpm. Мастер скачает MAESTRO UI и соберёт среду выполнения агента. После установки проверь, что ~/.local/bin есть в PATH, и выполни maestro app.</p>
+                <details class="install-source">
+                  <summary data-i18n="install.commands">Команды установки и запуска</summary>
+                  <pre><code id="install-commands">uvx --refresh maestro-install install
+maestro app</code></pre>
+                  <button class="copy-btn" type="button" data-copy-from="install-commands">
+                    <span class="copy-label" data-i18n="install.copy">Копировать</span>
+                  </button>
+                </details>
+              </div>
+            </li>
+            <li class="install-step">
+              <span class="install-step-num">2</span>
+              <div class="install-step-body">
+                <h3 data-i18n="install.s2.title">Выбери папку проекта и модель</h3>
+                <p data-i18n="install.s2.desc">В окне MAESTRO выбери папку для работы. Открой «Настройки → Модель чата», выбери провайдера и модель, введи API-ключ в поле настроек.</p>
+              </div>
+            </li>
+            <li class="install-step">
+              <span class="install-step-num">3</span>
+              <div class="install-step-body">
+                <h3 data-i18n="install.s3.title">Проверь агента на примере</h3>
+                <p data-i18n="install.s3.desc">В новой сессии напиши: «Собери агента, который извлекает сумму и валюту из чека. Для строки „Итого 450 ₽“ ожидаю 450 и RUB». Ответь на уточнения, подтверди сборку и попроси проверить другой чек.</p>
+              </div>
+            </li>
+          </ol>
+          <aside class="install-aside">
+            <h3 data-i18n="install.aside.title">Готовые сборки</h3>
+            <p data-i18n="install.aside.desc">Проверь раздел Releases для своей системы. Если сборка доступна, скачай и распакуй архив, открой MAESTRO и переходи к шагу 2.</p>
+            <div class="install-aside-links">
+              <a class="pillar-link" href="https://github.com/AIRI-MAESTRO/maestro-ui" data-i18n="install.repository">MAESTRO UI на GitHub</a>
+              <a class="pillar-link" href="https://airi-maestro.github.io/maestro-docs/ru/care/getting-started/quick-start/" data-doc-path="care/getting-started/quick-start/" data-i18n="install.docs">Как работать в MAESTRO UI</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-card reveal">
+          <div class="cta-doodles" aria-hidden="true">
+            <span
+              class="doodle doodle-diamond"
+              style="
+                --top: 12%;
+                --left: 6%;
+                --size: 26px;
+                --delay: 0s;
+                --depth: 0;
+              "
+            ></span>
+            <span
+              class="doodle doodle-ring"
+              style="
+                --top: 64%;
+                --left: 12%;
+                --size: 32px;
+                --delay: 1s;
+                --depth: 0;
+              "
+            ></span>
+            <span
+              class="doodle doodle-ring"
+              style="
+                --top: 24%;
+                --left: 46%;
+                --size: 16px;
+                --delay: 1.6s;
+                --depth: 0;
+              "
+            ></span>
+          </div>
+          <div class="cta-text">
+            <h2 data-i18n="cta.title">Попробуй MAESTRO на своём примере</h2>
+            <p data-i18n="cta.subtitle">
+              Собери агентную цепочку под текстовый запрос уже сегодня.
+            </p>
+            <div class="cta-actions">
+              <a
+                href="https://github.com/AIRI-MAESTRO/maestro-ui"
+                class="btn btn-primary btn-lg"
+                data-i18n="cta.primary"
+                target="_blank"
+                rel="noopener"
+                >Открыть на GitHub</a
+              >
+              <a
+                href="https://airi-maestro.github.io/maestro-docs/"
+                data-doc-path=""
+                class="btn btn-secondary btn-lg"
+                data-i18n="cta.secondary"
+                target="_blank"
+                rel="noopener"
+                >Читать документацию</a
+              >
+            </div>
+          </div>
+          <div class="cta-visual">
+            <div class="mascot-stage mascot-stage--scene" data-mood="success">
+              <div class="mascot-float">
+                <div class="mascot-body">
+                  <img
+                    class="mascot-img mascot-img--gif"
+                    src="assets/coffee.gif"
+                    width="216"
+                    height="256"
+                    alt="Maestric с кофе"
+                    decoding="async"
+                  />
+                </div>
+              </div>
+              <span class="mascot-shadow" aria-hidden="true"></span>
+              <div class="mascot-particles" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team" class="team">
+      <div class="container">
+        <div class="team-card reveal">
+          <div class="team-head">
+            <h2 data-i18n="team.title">Кто делает MAESTRO</h2>
+            <p data-i18n="team.subtitle">
+              Исследователи AIRI, которые развивают проект
+            </p>
+          </div>
+
+          <div class="team-grid">
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/work.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m2.name">Глазков Никита Олегович</h3>
+                <p class="team-role" data-i18n="team.m2.role">
+                  Научный сотрудник AIRI
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/coffee.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m1.name">
+                  Пчелин Константин Константинович
+                </h3>
+                <p class="team-role" data-i18n="team.m1.role">
+                  Младший научный сотрудник AIRI
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/evoc-congrats.webp"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m3.name">Волкова Ольга Алексеевна</h3>
+                <p class="team-role" data-i18n="team.m3.role">
+                  Младший научный сотрудник AIRI
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/mascot_dance.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m8.name">Антуфьев Данила Олегович</h3>
+                <p class="team-role" data-i18n="team.m8.role">
+                  Инженер-исследователь
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/magic_wand_slow_256.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m9.name">Кронидов Глеб Иванович</h3>
+                <p class="team-role" data-i18n="team.m9.role">
+                  Инженер-исследователь
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/phones.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m5.name">Боков Алексей Александрович</h3>
+                <p class="team-role" data-i18n="team.m5.role">
+                  Инженер-исследователь
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/bulb.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m6.name">Анохин Петр Константинович</h3>
+                <p class="team-role" data-i18n="team.m6.role">
+                  Ведущий научный сотрудник, руководитель группы
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/bricks.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m7.name">Хрульков Валентин Андреевич</h3>
+                <p class="team-role" data-i18n="team.m7.role">
+                  Ведущий научный сотрудник, руководитель группы
+                </p>
+              </div>
+            </article>
+
+            <article class="team-member">
+              <span class="team-avatar" aria-hidden="true">
+                <img
+                  src="assets/hero-mascot.gif"
+                  alt=""
+                  width="56"
+                  height="56"
+                  decoding="async"
+                  loading="lazy"
+                />
+              </span>
+              <div class="team-info">
+                <h3 data-i18n="team.m4.name">Беспалов Ярослав Радионович</h3>
+                <p class="team-role" data-i18n="team.m4.role">
+                  Научный сотрудник, руководитель группы «Мультимодальные
+                  архитектуры ИИ», AIRI
+                </p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <a
+            href="https://airi.net/ru/"
+            class="footer-airi-link"
+            data-airi-path="about"
+            target="_blank"
+            rel="noopener"
+          >
+            <img
+              class="airi-logo airi-logo--standard airi-logo--warm"
+              src="assets/airi-logo.png"
+              width="120"
+              height="32"
+              alt="AIRI"
+              decoding="async"
+            />
+            <img
+              class="airi-logo airi-logo--standard airi-logo--crystal"
+              src="assets/airi-logo-white.png"
+              width="120"
+              height="32"
+              alt="AIRI"
+              decoding="async"
+            />
+            <img
+              class="airi-logo airi-logo--anniversary airi-logo--warm"
+              src="assets/airi-5-logo.png"
+              width="1741"
+              height="719"
+              alt="AIRI 5 лет"
+              decoding="async"
+            />
+            <img
+              class="airi-logo airi-logo--anniversary airi-logo--crystal"
+              src="assets/airi-5-logo-white.png"
+              width="1741"
+              height="719"
+              alt="AIRI 5 лет"
+              decoding="async"
+            />
+          </a>
+          <div class="footer-brand-text">
+            <div data-i18n="footer.tagline">
+              Собери, запусти и улучши AI-агента из терминала
+            </div>
+            <div class="footer-meta" data-i18n="footer.mascot">
+              MAESTRO
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-columns">
+          <nav class="footer-col" aria-label="AIRI">
+            <h3 class="footer-col-title" data-i18n="footer.airTitle">AIRI</h3>
+            <ul class="footer-links">
+              <li>
+                <a
+                  href="https://airi.net/ru/"
+                  data-airi-path="about"
+                  data-i18n="footer.about"
+                  target="_blank"
+                  rel="noopener"
+                  >Об институте</a
+                >
+              </li>
+            </ul>
+          </nav>
+
+          <div class="footer-col footer-contacts">
+            <h3 class="footer-col-title" data-i18n="footer.contacts">
+              Контакты
+            </h3>
+            <ul class="footer-contact-list">
+              <li>
+                <a href="mailto:event@airi.net">event@airi.net</a>
+                <span data-i18n="footer.contact.events"
+                  >Для приглашений на мероприятия</span
+                >
+              </li>
+              <li>
+                <a href="mailto:partner@airi.net">partner@airi.net</a>
+                <span data-i18n="footer.contact.partner"
+                  >По вопросам научного сотрудничества и партнёрства</span
+                >
+              </li>
+              <li>
+                <a href="mailto:pr@airi.net">pr@airi.net</a>
+                <span data-i18n="footer.contact.pr">Для журналистов и СМИ</span>
+              </li>
+            </ul>
+          </div>
+
+          <nav class="footer-col" aria-label="MAESTRO CARE">
+            <h3 class="footer-col-title" data-i18n="footer.careTitle">
+              MAESTRO
+            </h3>
+            <ul class="footer-links">
+              <li>
+                <a
+                  href="https://airi-maestro.github.io/maestro-docs/"
+                  data-doc-path=""
+                  data-i18n="footer.docs"
+                  target="_blank"
+                  rel="noopener"
+                  >Документация</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://github.com/AIRI-MAESTRO/care/blob/main/docs/ARCHITECTURE.md"
+                  data-i18n="footer.arch"
+                  target="_blank"
+                  rel="noopener"
+                  >Архитектура</a
+                >
+              </li>
+              <li><a href="#team" data-i18n="footer.team">Команда</a></li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="footer-bottom">
+          <span data-i18n="footer.copy"
+            >© 2026 MAESTRO. Открытый код.</span
+          >
+        </div>
+      </div>
+    </footer>
+
+    <button
+      type="button"
+      class="feedback-fab"
+      data-feedback-open
+      data-i18n-aria-label="feedback.button"
+      aria-label="Обратная связь"
+      aria-haspopup="dialog"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path
+          d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+        />
+      </svg>
+      <span class="feedback-fab-label" data-i18n="feedback.button"
+        >Обратная связь</span
+      >
+    </button>
+
+    <div
+      class="feedback-modal"
+      data-feedback-modal
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="feedback-modal-title"
+      hidden
+    >
+      <div class="feedback-modal-backdrop" data-feedback-close></div>
+      <div class="feedback-modal-dialog" role="document">
+        <header class="feedback-modal-head">
+          <h2
+            class="feedback-modal-title"
+            id="feedback-modal-title"
+            data-i18n="feedback.title"
+          >
+            Обратная связь
+          </h2>
+          <button
+            type="button"
+            class="feedback-modal-close"
+            data-feedback-close
+            data-i18n-aria-label="feedback.close"
+            aria-label="Закрыть"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </header>
+        <div class="feedback-modal-body" data-feedback-body></div>
+      </div>
+    </div>
+
+    <dialog class="hero-video-dialog" id="hero-video-dialog" lang="ru" aria-labelledby="hero-video-title">
+      <div class="hero-video-dialog-head">
+        <h2 id="hero-video-title">Демонстрация MAESTRO</h2>
+        <form method="dialog">
+          <button type="submit" class="btn btn-secondary" autofocus>Закрыть</button>
+        </form>
+      </div>
+      <video controls playsinline preload="none" aria-label="Демонстрация MAESTRO"></video>
+    </dialog>
+
+    <script src="i18n.js?v=29"></script>
+    <script src="main.js?v=29"></script>
+  </body>
+</html>
